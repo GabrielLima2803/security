@@ -51,27 +51,26 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Implemente a lógica apropriada se necessário
+        return true; 
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Implemente a lógica apropriada se necessário
+        return true; 
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Implemente a lógica apropriada se necessário
+        return true; 
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Implemente a lógica apropriada se necessário
+        return true; 
     }
 
     public User getUser() {
         return user;
     }
-
     
 }

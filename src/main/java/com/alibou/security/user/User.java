@@ -1,8 +1,6 @@
 package com.alibou.security.user;
 
 import com.alibou.security.role.Role;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,9 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "USERS")
@@ -38,4 +34,5 @@ public class User {
     @ManyToMany
     private List<Role> roles;
 
+    
 }

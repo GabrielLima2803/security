@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.alibou.security.user.User;
 import com.alibou.security.user.UserRepository;
+import com.alibou.security.user.UserService;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -24,6 +27,7 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION = "Authorization";
     private static final String BASIC = "Basic ";
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -60,6 +64,11 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+
+    private boolean isLoginRequest(HttpServletRequest request) {
+        return request.getMethod().equals(HttpMethod.POST.name()) && request.getRequestURI().equals("/user/login");
+    }
+
     private void setAuthentication(User user) {
         Authentication authentication = createAuthenticationToken(user);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -72,6 +81,7 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean checkPassword(String userPassword, String loginPassword) {
         return passwordEncoder().matches(loginPassword, userPassword);
+        
     }
 
     private String decodeBase64(String base64) {
@@ -87,4 +97,15 @@ public class CustomBasicAuthenticationFilter extends OncePerRequestFilter {
     private String getHeader(HttpServletRequest request) {
         return request.getHeader(AUTHORIZATION);
     }
+    private void authenticate(HttpServletRequest request) {
+        String[] credentials = decodeBase64(getHeader(request).replace(BASIC, ""))
+                .split(":");
+
+        String username = credentials[0];
+        String password = credentials[1];
+
+        User authenticatedUser = userService.authenticate(username, password);
+        setAuthentication(authenticatedUser);
+    }
+
 }
